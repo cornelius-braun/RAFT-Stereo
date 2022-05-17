@@ -185,7 +185,7 @@ def train(args):
                 logging.info(f"Saving file {save_path.absolute()}")
                 torch.save(model.state_dict(), save_path)
 
-                results = validate_things(model.module, iters=args.valid_iters)
+                results = validate_endovis(model.module, iters=args.valid_iters)
 
                 logger.write_dict(results)
 
@@ -219,10 +219,11 @@ if __name__ == '__main__':
 
     # Training parameters
     parser.add_argument('--batch_size', type=int, default=6, help="batch size used during training.")
-    parser.add_argument('--train_datasets', nargs='+', default=['sceneflow'], help="training datasets.")
+    parser.add_argument('--train_datasets', nargs='+', default=['Endovis'], help="training datasets.")
     parser.add_argument('--lr', type=float, default=0.0002, help="max learning rate.")
     parser.add_argument('--num_steps', type=int, default=100000, help="length of training schedule.")
     parser.add_argument('--image_size', type=int, nargs='+', default=[320, 720], help="size of the random image crops used during training.")
+    parser.add_argument('--input_size', type=int, nargs='+', default=[256, 320], help="size of the random image crops used during training.")
     parser.add_argument('--train_iters', type=int, default=16, help="number of updates to the disparity field in each forward pass.")
     parser.add_argument('--wdecay', type=float, default=.00001, help="Weight decay in optimizer.")
 
@@ -245,6 +246,7 @@ if __name__ == '__main__':
     parser.add_argument('--do_flip', default=False, choices=['h', 'v'], help='flip the images horizontally or vertically')
     parser.add_argument('--spatial_scale', type=float, nargs='+', default=[0, 0], help='re-scale the images randomly')
     parser.add_argument('--noyjitter', action='store_true', help='don\'t simulate imperfect rectification')
+    parser.add_argument('--status', choices=["train", "val"], default="train", help='status, train or val, for loading dataset')
     args = parser.parse_args()
 
     torch.manual_seed(1234)
